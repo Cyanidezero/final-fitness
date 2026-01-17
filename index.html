@@ -1,0 +1,3180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack - Mobile Fitness Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--dark);
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+            box-shadow: var(--shadow-xl);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Login/Register Screens */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .auth-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            color: var(--dark);
+            backdrop-filter: blur(10px);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .auth-logo i {
+            color: var(--accent);
+        }
+        
+        .auth-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .auth-input-group {
+            position: relative;
+        }
+        
+        .auth-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .auth-input-group input, 
+        .auth-input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .auth-input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .auth-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Profile Section */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .profile-stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .profile-stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .date-display {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+            position: sticky;
+            top: 86px;
+            z-index: 99;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 16px 5px;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+        }
+        
+        .tab.active::after {
+            width: 80%;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        
+        .tab i {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px 15px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-success);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .calories-display {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .calorie-item {
+            flex: 1;
+        }
+        
+        .calorie-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .calorie-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .water-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .water-glass {
+            width: 50px;
+            height: 70px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 0 0 12px 12px;
+            position: relative;
+            border: 2px solid #7dd3fc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .water-glass:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: #0ea5e9;
+        }
+        
+        .water-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+            border-radius: 0 0 10px 10px;
+            transition: height 0.5s ease;
+            box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .log-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        input:read-only {
+            background-color: #f1f5f9;
+            cursor: not-allowed;
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-add {
+            background: var(--gradient-success);
+        }
+        
+        .btn-danger {
+            background: var(--gradient-danger);
+        }
+        
+        .log-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            border-left: 3px solid transparent;
+        }
+        
+        .log-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+            border-left-color: var(--accent);
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-info {
+            flex: 1;
+        }
+        
+        .log-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .log-details {
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .log-calories {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .log-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .icon-btn:hover {
+            color: var(--primary);
+        }
+        
+        .delete-btn:hover {
+            color: var(--danger);
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-left-width: 6px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #e2e8f0;
+            z-index: 100;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .quick-add {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .quick-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .quick-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+            z-index: -1;
+        }
+        
+        .quick-btn:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .quick-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Quick Food Buttons */
+        .quick-food-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .quick-food-btn {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: default;
+            transition: none;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        .quick-food-btn i {
+            font-size: 2rem;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quick-food-btn span {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quick-food-btn small {
+            font-size: 0.75rem;
+            color: #64748b;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-tab {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .profile-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .profile-section h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-field {
+            margin-bottom: 15px;
+        }
+        
+        .profile-field label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .profile-field span {
+            display: block;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: #333;
+        }
+        
+        .edit-profile-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        /* NUTRI SCAN AI STYLES - ADDED */
+        .nutri-scan-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .nutri-scan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .nutri-scan-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .scan-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .scan-option-btn {
+            background: #f8f9fa;
+            border: 2px solid #eaeaea;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .scan-option-btn:hover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+        
+        .scan-option-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .scan-option-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .scan-option-desc {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .scan-preview {
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-preview:hover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+        
+        .scan-preview i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .scan-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .scan-results {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .scan-results.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        .scanned-food-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .scan-confidence {
+            display: inline-block;
+            background: #e8f5e9;
+            color: var(--success);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nutrition-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .nutrition-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nutrition-label {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .scan-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .scan-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        .scan-loading.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .food-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .food-suggestion {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .food-suggestion:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .suggestion-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .food-suggestion:hover .suggestion-icon {
+            color: white;
+        }
+        
+        .suggestion-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .suggestion-calories {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .food-suggestion:hover .suggestion-calories {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .camera-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-modal.active {
+            display: flex;
+        }
+        
+        .camera-container {
+            width: 90%;
+            max-width: 400px;
+            background: black;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .camera-video {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #222;
+        }
+        
+        .camera-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        
+        .close-camera {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .ai-scanned-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 500px) {
+            body {
+                box-shadow: none;
+            }
+            
+            .tab {
+                font-size: 0.75rem;
+                padding: 12px 2px;
+            }
+            
+            .tab i {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .auth-container {
+                padding: 20px;
+            }
+            
+            .scan-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .food-suggestions {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>FitTrack</span>
+                </div>
+                <p class="auth-subtitle">Log in to your fitness account</p>
+            </div>
+            
+            <form class="auth-form" id="loginForm">
+                <div class="auth-input-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> Log In
+                </button>
+                
+                <div class="auth-switch">
+                    <p>Don't have an account? <a id="showRegister">Register here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Register Screen -->
+    <div id="registerScreen" class="auth-screen" style="display: none;">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>FitTrack</span>
+                </div>
+                <p class="auth-subtitle">Create your fitness account</p>
+            </div>
+            
+            <form class="auth-form" id="registerForm">
+                <div class="auth-input-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" placeholder="John Doe" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerAge">Age</label>
+                    <input type="number" id="registerAge" placeholder="25" min="10" max="100" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerGender">Gender</label>
+                    <select id="registerGender" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerHeight">Height (cm)</label>
+                    <input type="number" id="registerHeight" placeholder="175" min="100" max="250" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerWeight">Weight (kg)</label>
+                    <input type="number" id="registerWeight" placeholder="70" min="30" max="300" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerGoal">Fitness Goal</label>
+                    <select id="registerGoal" required>
+                        <option value="">Select Goal</option>
+                        <option value="weight_loss">Weight Loss</option>
+                        <option value="muscle_gain">Muscle Gain</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="endurance">Endurance</option>
+                    </select>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerActivity">Activity Level</label>
+                    <select id="registerActivity" required>
+                        <option value="">Select Activity Level</option>
+                        <option value="sedentary">Sedentary (little or no exercise)</option>
+                        <option value="light">Light (exercise 1-3 days/week)</option>
+                        <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+                        <option value="active">Active (exercise 6-7 days/week)</option>
+                        <option value="very_active">Very Active (hard exercise daily)</option>
+                    </select>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerDayStreak">Day Streak</label>
+                    <input type="number" id="registerDayStreak" placeholder="0" min="0" value="0">
+                    <small style="color: #64748b; font-size: 0.85rem; margin-top: 5px; display: block;">
+                        Current fitness tracking streak in days
+                    </small>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerBMI">BMI (Body Mass Index)</label>
+                    <input type="number" id="registerBMI" placeholder="Auto-calculated or enter manually" step="0.1" min="10" max="50">
+                    <small style="color: #64748b; font-size: 0.85rem; margin-top: 5px; display: block;">
+                        Will auto-calculate from height and weight, or enter manually
+                    </small>
+                </div>
+                
+                <div class="auth-input-group">
+                    <label for="registerDailyCalories">Daily Calories Goal</label>
+                    <input type="number" id="registerDailyCalories" placeholder="Auto-calculated or enter manually" min="1000" max="5000">
+                    <small style="color: #64748b; font-size: 0.85rem; margin-top: 5px; display: block;">
+                        Will auto-calculate from your profile, or set manually
+                    </small>
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                
+                <div class="auth-switch">
+                    <p>Already have an account? <a id="showLogin">Log in here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main App (hidden until logged in) -->
+    <div id="mainApp" style="display: none;">
+        <header>
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>FitTrack</span>
+            </div>
+            <div class="header-actions">
+                <div class="date-display" id="currentDate">Monday, September 16, 2023</div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+        
+        <div class="profile-section" id="profileHeader">
+            <!-- Profile header will be dynamically added here -->
+        </div>
+        
+        <div class="nav-tabs">
+            <div class="tab active" data-tab="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="tab" data-tab="food">
+                <i class="fas fa-utensils"></i>
+                <span>Food</span>
+            </div>
+            <div class="tab" data-tab="exercise">
+                <i class="fas fa-running"></i>
+                <span>Exercise</span>
+            </div>
+            <div class="tab" data-tab="water">
+                <i class="fas fa-tint"></i>
+                <span>Water</span>
+            </div>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Calories</h2>
+                    <span class="calorie-total" id="calorie-total-display">0 / 2,000</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Calories Consumed</span>
+                        <span id="calorie-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="calorie-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="calories-display">
+                    <div class="calorie-item">
+                        <div class="calorie-value" id="calories-consumed">0</div>
+                        <div class="calorie-label">Consumed</div>
+                    </div>
+                    <div class="calorie-item">
+                        <div class="calorie-value" id="calories-burned">0</div>
+                        <div class="calorie-label">Burned</div>
+                    </div>
+                    <div class="calorie-item">
+                        <div class="calorie-value" id="calories-remaining">2,000</div>
+                        <div class="calorie-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Dashboard Statistics</h2>
+                </div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-total-calories">0</div>
+                        <div class="stat-label">Total Calories</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-total-burned">0</div>
+                        <div class="stat-label">Calories Burned</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-net-calories">0</div>
+                        <div class="stat-label">Net Calories</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-total-water">0</div>
+                        <div class="stat-label">Water (glasses)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-meals-count">0</div>
+                        <div class="stat-label">Meals Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dashboard-exercises-count">0</div>
+                        <div class="stat-label">Exercises Logged</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Water Intake</h2>
+                    <span id="water-total">0 / 8 glasses</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Hydration</span>
+                        <span id="water-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="water-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="water-container" id="dashboard-water">
+                    <!-- Water glasses will be dynamically generated here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activities</h2>
+                </div>
+                <div class="log-list" id="recent-activities">
+                    <!-- Recent activities will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Food Log Tab - WITH ADDED NUTRI SCAN AI -->
+        <div id="food" class="tab-content">
+            <!-- Nutri Scan AI Section - ADDED -->
+            <div class="nutri-scan-section">
+                <div class="nutri-scan-header">
+                    <h2 class="nutri-scan-title">Nutri Scan AI</h2>
+                    <span class="ai-badge">
+                        <i class="fas fa-robot"></i> AI-Powered
+                    </span>
+                </div>
+                
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">
+                    Scan your food using AI to automatically detect and log nutrition information.
+                </p>
+                
+                <div class="scan-options">
+                    <div class="scan-option-btn" id="takePhotoBtn">
+                        <i class="fas fa-camera scan-option-icon"></i>
+                        <span class="scan-option-label">Take Photo</span>
+                        <span class="scan-option-desc">Use camera</span>
+                    </div>
+                    
+                    <div class="scan-option-btn" id="uploadPhotoBtn">
+                        <i class="fas fa-upload scan-option-icon"></i>
+                        <span class="scan-option-label">Upload Photo</span>
+                        <span class="scan-option-desc">From gallery</span>
+                    </div>
+                </div>
+                
+                <div class="scan-preview" id="scanPreview">
+                    <div class="scan-loading" id="scanLoading">
+                        <div class="loading-spinner"></div>
+                        <p>Analyzing your food...</p>
+                    </div>
+                    
+                    <i class="fas fa-camera"></i>
+                    <p>Tap to scan your food</p>
+                    <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">or select an option above</p>
+                </div>
+                
+                <!-- Food Suggestions -->
+                <div class="food-suggestions" id="foodSuggestions">
+                    <!-- Food suggestions will be added by JavaScript -->
+                </div>
+                
+                <!-- Scan Results -->
+                <div class="scan-results" id="scanResults">
+                    <div class="scanned-food-name" id="scannedFoodName">Grilled Chicken Breast</div>
+                    <div class="scan-confidence" id="scanConfidence">94% confidence</div>
+                    
+                    <div class="nutrition-grid">
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="scanCalories">165</div>
+                            <div class="nutrition-label">Calories</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="scanProtein">31g</div>
+                            <div class="nutrition-label">Protein</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="scanCarbs">0g</div>
+                            <div class="nutrition-label">Carbs</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="scanFat">3.6g</div>
+                            <div class="nutrition-label">Fat</div>
+                        </div>
+                    </div>
+                    
+                    <div class="scan-actions">
+                        <button class="btn btn-add" id="addScannedFood">
+                            <i class="fas fa-plus"></i> Add to Food Log
+                        </button>
+                        <button class="btn" id="rescanFood">
+                            <i class="fas fa-redo"></i> Scan Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Add Food Section - Example/Demo Only -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Add Food <small style="font-size: 0.7rem; font-weight: normal; color: #64748b;">(Example)</small></h2>
+                </div>
+                <div class="quick-food-buttons">
+                    <button class="quick-food-btn" data-food="Grilled Chicken Breast">
+                        <i class="fas fa-drumstick-bite"></i>
+                        <span>Grilled Chicken</span>
+                        <small>165 cal</small>
+                    </button>
+                    <button class="quick-food-btn" data-food="Salad Bowl">
+                        <i class="fas fa-leaf"></i>
+                        <span>Salad</span>
+                        <small>120 cal</small>
+                    </button>
+                    <button class="quick-food-btn" data-food="Guava">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Guava</span>
+                        <small>68 cal</small>
+                    </button>
+                    <button class="quick-food-btn" data-food="Eggs (2 whole)">
+                        <i class="fas fa-egg"></i>
+                        <span>Egg</span>
+                        <small>143 cal</small>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Original Food Log Card - UNCHANGED -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Log Food</h2>
+                </div>
+                <form class="log-form" id="food-form">
+                    <div class="form-group">
+                        <label for="food-name">Food Name</label>
+                        <input type="text" id="food-name" placeholder="e.g., Grilled Chicken" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="food-calories">Calories</label>
+                        <input type="number" id="food-calories" placeholder="e.g., 250" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="food-meal">Meal Type</label>
+                        <select id="food-meal">
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-add">
+                        <i class="fas fa-plus"></i> Add Food
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Food Statistics Card - ADDED -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Food Statistics</h2>
+                </div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="food-total-calories">0</div>
+                        <div class="stat-label">Total Calories</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="food-meals-count">0</div>
+                        <div class="stat-label">Meals Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="food-average-calories">0</div>
+                        <div class="stat-label">Avg per Meal</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="food-ai-scanned">0</div>
+                        <div class="stat-label">AI Scanned</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Original Food Log Card - UNCHANGED -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Food Log</h2>
+                </div>
+                <div class="log-list" id="food-log">
+                    <!-- Food items will be dynamically added here -->
+                </div>
+                <div class="empty-state" id="empty-food">
+                    <i class="fas fa-utensils"></i>
+                    <p>No food logged today. Add your first meal!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exercise Log Tab -->
+        <div id="exercise" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Log Exercise</h2>
+                </div>
+                <form class="log-form" id="exercise-form">
+                    <div class="form-group">
+                        <label for="exercise-type">Exercise Type</label>
+                        <select id="exercise-type" required>
+                            <option value="">Select Exercise Type</option>
+                            <option value="running">Running</option>
+                            <option value="jogging">Jogging</option>
+                            <option value="walking">Walking</option>
+                            <option value="cycling">Cycling (moderate)</option>
+                            <option value="swimming">Swimming (moderate)</option>
+                            <option value="weightlifting">Weight Lifting</option>
+                            <option value="yoga">Yoga</option>
+                            <option value="pilates">Pilates</option>
+                            <option value="dancing">Dancing</option>
+                            <option value="basketball">Basketball</option>
+                            <option value="soccer">Soccer</option>
+                            <option value="tennis">Tennis</option>
+                            <option value="elliptical">Elliptical</option>
+                            <option value="rowing">Rowing</option>
+                            <option value="hiking">Hiking</option>
+                            <option value="custom">Custom Exercise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise-name">Exercise Name (if custom)</label>
+                        <input type="text" id="exercise-name" placeholder="e.g., Custom Workout">
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise-duration">Duration (minutes)</label>
+                        <input type="number" id="exercise-duration" placeholder="e.g., 30" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise-calories">Calories Burned (auto-calculated)</label>
+                        <input type="number" id="exercise-calories" placeholder="Will be calculated automatically" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                        <small style="color: #64748b; font-size: 0.85rem; margin-top: 5px; display: block;">
+                            <i class="fas fa-info-circle"></i> Calories calculated based on your weight, exercise type, and duration
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-add">
+                        <i class="fas fa-plus"></i> Add Exercise
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Exercise Statistics Card - ADDED -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Exercise Statistics</h2>
+                </div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="exercise-total-calories">0</div>
+                        <div class="stat-label">Total Calories Burned</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="exercise-total-duration">0</div>
+                        <div class="stat-label">Total Duration (mins)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="exercise-count">0</div>
+                        <div class="stat-label">Exercises Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="exercise-average-calories">0</div>
+                        <div class="stat-label">Avg Calories per Exercise</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Exercises</h2>
+                </div>
+                <div class="log-list" id="exercise-log">
+                    <!-- Exercise items will be dynamically added here -->
+                </div>
+                <div class="empty-state" id="empty-exercise">
+                    <i class="fas fa-running"></i>
+                    <p>No exercises logged today. Add your first activity!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Water Log Tab -->
+        <div id="water" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Water Intake Tracker</h2>
+                </div>
+                <p style="margin-bottom: 15px; color: #666;">Goal: <span id="water-goal">8</span> glasses (<span id="water-liters">2</span> liters) per day</p>
+                <div class="water-container" id="water-tracker">
+                    <!-- Water glasses will be dynamically generated here -->
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn" id="add-water">
+                        <i class="fas fa-tint"></i> Add 1 Glass (250ml)
+                    </button>
+                    <button class="btn btn-danger" id="reset-water" style="margin-top: 10px;">
+                        <i class="fas fa-redo"></i> Reset Water
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Water Statistics Card - ADDED -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Water Statistics</h2>
+                </div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="water-total-glasses">0</div>
+                        <div class="stat-label">Total Glasses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="water-total-liters">0</div>
+                        <div class="stat-label">Total Liters</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="water-completion">0</div>
+                        <div class="stat-label">Goal Completion (%)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="water-remaining">0</div>
+                        <div class="stat-label">Glasses Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Water Log</h2>
+                </div>
+                <div class="log-list" id="water-log">
+                    <!-- Water intake logs will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <footer>
+            <div class="quick-add">
+                <div class="quick-btn" data-quick="food">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="quick-btn" data-quick="exercise">
+                    <i class="fas fa-running"></i>
+                </div>
+                <div class="quick-btn" data-quick="water">
+                    <i class="fas fa-tint"></i>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- Camera Modal - ADDED FOR NUTRI SCAN -->
+        <div class="camera-modal" id="cameraModal">
+            <div class="camera-container">
+                <button class="close-camera" id="closeCamera">
+                    <i class="fas fa-times"></i>
+                </button>
+                <video class="camera-video" id="cameraVideo" autoplay></video>
+                <div class="camera-controls">
+                    <button class="camera-btn" id="capturePhoto">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // User management
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('fitTrackUsers')) || [];
+        
+        // User data storage
+        let foodLog = [];
+        let exerciseLog = [];
+        let waterLog = [];
+        
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Switch between login and register screens
+        document.getElementById('showRegister').addEventListener('click', () => {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('registerScreen').style.display = 'flex';
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', () => {
+            document.getElementById('registerScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+        });
+        
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Successful login
+                currentUser = user;
+                loadUserData();
+                showMainApp();
+            } else {
+                alert('Invalid email or password. Please try again.');
+            }
+        });
+        
+        // Register form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if user already exists
+            const email = document.getElementById('registerEmail').value;
+            const existingUser = users.find(u => u.email === email);
+            
+            if (existingUser) {
+                alert('An account with this email already exists. Please log in instead.');
+                return;
+            }
+            
+            // Get form values
+            const height = document.getElementById('registerHeight').value;
+            const weight = document.getElementById('registerWeight').value;
+            const age = document.getElementById('registerAge').value;
+            const gender = document.getElementById('registerGender').value;
+            const activity = document.getElementById('registerActivity').value;
+            
+            // Get manual values or calculate
+            const manualDayStreak = document.getElementById('registerDayStreak').value;
+            const manualBMI = document.getElementById('registerBMI').value;
+            const manualDailyCalories = document.getElementById('registerDailyCalories').value;
+            
+            // Calculate BMI (use manual if provided, otherwise calculate)
+            let bmi;
+            if (manualBMI && manualBMI !== '') {
+                bmi = parseFloat(manualBMI).toFixed(1);
+            } else {
+                bmi = (weight / ((height/100) * (height/100))).toFixed(1);
+            }
+            
+            // Calculate daily calorie needs (use manual if provided, otherwise calculate)
+            let dailyCalories;
+            if (manualDailyCalories && manualDailyCalories !== '') {
+                dailyCalories = parseInt(manualDailyCalories);
+            } else {
+                // Calculate based on Mifflin-St Jeor Equation
+                let bmr;
+                if (gender === 'male') {
+                    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+                } else {
+                    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+                }
+                
+                // Activity multipliers
+                const activityMultipliers = {
+                    sedentary: 1.2,
+                    light: 1.375,
+                    moderate: 1.55,
+                    active: 1.725,
+                    very_active: 1.9
+                };
+                
+                dailyCalories = Math.round(bmr * activityMultipliers[activity]);
+            }
+            
+            // Get day streak (use manual if provided, otherwise 0)
+            const dayStreak = manualDayStreak && manualDayStreak !== '' ? parseInt(manualDayStreak) : 0;
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name: document.getElementById('registerName').value,
+                email: email,
+                password: document.getElementById('registerPassword').value,
+                age: age,
+                gender: gender,
+                height: height,
+                weight: weight,
+                bmi: bmi,
+                goal: document.getElementById('registerGoal').value,
+                activity: activity,
+                dailyCalories: dailyCalories,
+                dayStreak: dayStreak,
+                joinDate: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('fitTrackUsers', JSON.stringify(users));
+            
+            currentUser = newUser;
+            initializeUserData();
+            showMainApp();
+            
+            alert('Account created successfully! Welcome to FitTrack.');
+        });
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to log out?')) {
+                currentUser = null;
+                showLoginScreen();
+            }
+        });
+        
+        // Show main app after login
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('registerScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Update profile header
+            updateProfileHeader();
+            // Update profile tab
+            updateProfileTab();
+            // Initialize app
+            initApp();
+        }
+        
+        // Show login screen
+        function showLoginScreen() {
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('registerScreen').style.display = 'none';
+            
+            // Clear login form
+            document.getElementById('loginForm').reset();
+        }
+        
+        // Load user data
+        function loadUserData() {
+            // Load data from localStorage if it exists
+            const savedData = localStorage.getItem(`fitTrackData_${currentUser.id}`);
+            
+            if (savedData) {
+                try {
+                    const userData = JSON.parse(savedData);
+                    foodLog = userData.foodLog || [];
+                    exerciseLog = userData.exerciseLog || [];
+                    waterLog = userData.waterLog || [];
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                    // Reset if there's an error
+                    foodLog = [];
+                    exerciseLog = [];
+                    waterLog = [];
+                }
+            } else {
+                // No saved data, start fresh
+                foodLog = [];
+                exerciseLog = [];
+                waterLog = [];
+            }
+            
+            // Save the data (in case it was loaded or reset)
+            saveUserData();
+        }
+        
+        // Initialize user data (for new users)
+        function initializeUserData() {
+            foodLog = [];
+            exerciseLog = [];
+            waterLog = [];
+            
+            saveUserData();
+        }
+        
+        // Save user data
+        function saveUserData() {
+            const userData = {
+                foodLog,
+                exerciseLog,
+                waterLog
+            };
+            
+            localStorage.setItem(`fitTrackData_${currentUser.id}`, JSON.stringify(userData));
+        }
+        
+        // Update profile header
+        function updateProfileHeader() {
+            const profileHeader = document.getElementById('profileHeader');
+            const firstName = currentUser.name.split(' ')[0];
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            // Get streak from user profile (default to 0 if not set)
+            const streak = currentUser.dayStreak || 0;
+            
+            profileHeader.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">${initials}</div>
+                    <div class="profile-info">
+                        <h3>Hello, ${firstName}!</h3>
+                        <p>${currentUser.goal.replace('_', ' ')} • ${currentUser.dailyCalories} daily calories</p>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">${streak}</div>
+                        <div class="profile-stat-label">Day Streak</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">${currentUser.weight}</div>
+                        <div class="profile-stat-label">Current Weight</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">${currentUser.bmi}</div>
+                        <div class="profile-stat-label">BMI</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Update profile tab
+        function updateProfileTab() {
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('profile-age').textContent = currentUser.age;
+            document.getElementById('profile-gender').textContent = currentUser.gender.charAt(0).toUpperCase() + currentUser.gender.slice(1);
+            document.getElementById('profile-height').textContent = `${currentUser.height} cm`;
+            document.getElementById('profile-weight').textContent = `${currentUser.weight} kg`;
+            document.getElementById('profile-bmi').textContent = currentUser.bmi;
+            document.getElementById('profile-goal').textContent = currentUser.goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('profile-activity').textContent = currentUser.activity.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('profile-calories').textContent = currentUser.dailyCalories.toLocaleString();
+            
+            // Update water goal based on weight
+            const waterGoal = Math.max(8, Math.round(currentUser.weight / 10));
+            document.getElementById('water-goal').textContent = waterGoal;
+            document.getElementById('water-liters').textContent = (waterGoal * 0.25).toFixed(1);
+        }
+        
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show active tab content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Quick add buttons
+        const quickBtns = document.querySelectorAll('.quick-btn');
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-quick');
+                
+                // Switch to the corresponding tab
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+                
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tab).classList.add('active');
+            });
+        });
+        
+        // Calculate totals
+        function calculateTotals() {
+            // Food calculations
+            const totalFoodCalories = foodLog.reduce((total, item) => total + item.calories, 0);
+            const foodMealsCount = foodLog.length;
+            const averageFoodCalories = foodMealsCount > 0 ? Math.round(totalFoodCalories / foodMealsCount) : 0;
+            const aiScannedCount = foodLog.filter(item => item.scanned).length;
+
+            // Exercise calculations
+            const totalExerciseCalories = exerciseLog.reduce((total, item) => total + item.calories, 0);
+            const totalExerciseDuration = exerciseLog.reduce((total, item) => total + item.duration, 0);
+            const exerciseCount = exerciseLog.length;
+            const averageExerciseCalories = exerciseCount > 0 ? Math.round(totalExerciseCalories / exerciseCount) : 0;
+
+            // Water calculations
+            const totalWater = waterLog.reduce((total, item) => total + item.amount, 0);
+            const waterGoal = Math.max(8, Math.round(currentUser.weight / 10));
+            const totalWaterLiters = (totalWater * 0.25).toFixed(1);
+            const waterCompletion = Math.round((totalWater / waterGoal) * 100);
+            const waterRemaining = Math.max(0, waterGoal - totalWater);
+
+            // Update dashboard main display
+            document.getElementById('calories-consumed').textContent = totalFoodCalories;
+            document.getElementById('calories-burned').textContent = totalExerciseCalories;
+
+            const remaining = currentUser.dailyCalories - totalFoodCalories + totalExerciseCalories;
+            document.getElementById('calories-remaining').textContent = Math.max(0, remaining);
+
+            // Update progress bar
+            const consumedPercentage = Math.min(100, (totalFoodCalories / currentUser.dailyCalories) * 100);
+            document.querySelector('#dashboard .progress-fill').style.width = `${consumedPercentage}%`;
+            document.querySelector('#dashboard .progress-label span:last-child').textContent = `${Math.round(consumedPercentage)}%`;
+            document.querySelector('#dashboard .calorie-total').textContent = `${totalFoodCalories} / ${currentUser.dailyCalories.toLocaleString()}`;
+
+        // Update water display
+            document.getElementById('water-total').textContent = `${totalWater} / ${waterGoal} glasses`;
+            const waterPercentage = Math.min(100, (totalWater / waterGoal) * 100);
+            document.getElementById('water-percentage').textContent = `${Math.round(waterPercentage)}%`;
+            document.getElementById('water-progress-fill').style.width = `${waterPercentage}%`;
+
+            // Update dashboard water glasses
+            updateDashboardWater(totalWater, waterGoal);
+
+            // Update Dashboard Statistics
+            document.getElementById('dashboard-total-calories').textContent = totalFoodCalories;
+            document.getElementById('dashboard-total-burned').textContent = totalExerciseCalories;
+            document.getElementById('dashboard-net-calories').textContent = totalFoodCalories - totalExerciseCalories;
+            document.getElementById('dashboard-total-water').textContent = totalWater;
+            document.getElementById('dashboard-meals-count').textContent = foodMealsCount;
+            document.getElementById('dashboard-exercises-count').textContent = exerciseCount;
+
+            // Update Food Statistics
+            document.getElementById('food-total-calories').textContent = totalFoodCalories;
+            document.getElementById('food-meals-count').textContent = foodMealsCount;
+            document.getElementById('food-average-calories').textContent = averageFoodCalories;
+            document.getElementById('food-ai-scanned').textContent = aiScannedCount;
+
+            // Update Exercise Statistics
+            document.getElementById('exercise-total-calories').textContent = totalExerciseCalories;
+            document.getElementById('exercise-total-duration').textContent = totalExerciseDuration;
+            document.getElementById('exercise-count').textContent = exerciseCount;
+            document.getElementById('exercise-average-calories').textContent = averageExerciseCalories;
+
+            // Update Water Statistics
+            document.getElementById('water-total-glasses').textContent = totalWater;
+            document.getElementById('water-total-liters').textContent = totalWaterLiters;
+            document.getElementById('water-completion').textContent = `${waterCompletion}%`;
+            document.getElementById('water-remaining').textContent = waterRemaining;
+
+            // Update recent activities
+            updateRecentActivities();
+
+            // Save user data
+            saveUserData();
+        }
+        
+        // Update dashboard water display
+        function updateDashboardWater(totalWater, waterGoal) {
+            const container = document.getElementById('dashboard-water');
+            container.innerHTML = '';
+            
+            const glassesToShow = Math.min(waterGoal, 8);
+            
+            for (let i = 0; i < glassesToShow; i++) {
+                const glass = document.createElement('div');
+                glass.className = 'water-glass';
+                glass.style.width = `${350 / glassesToShow}px`;
+                
+                const fill = document.createElement('div');
+                fill.className = 'water-fill';
+                
+                const glassWater = waterLog[i]?.amount || 0;
+                fill.style.height = `${(glassWater / 0.5) * 100}%`;
+                
+                glass.appendChild(fill);
+                container.appendChild(glass);
+            }
+        }
+        
+        // Initialize water tracker
+        function initWaterTracker() {
+            const waterTracker = document.getElementById('water-tracker');
+            waterTracker.innerHTML = '';
+
+            const waterGoal = Math.max(8, Math.round(currentUser.weight / 10));
+            const glassesToShow = Math.min(waterGoal, 12);
+
+            for (let i = 0; i < glassesToShow; i++) {
+                const glass = document.createElement('div');
+                glass.className = 'water-glass';
+                glass.style.width = `${Math.min(50, 400 / glassesToShow)}px`;
+                glass.setAttribute('data-amount', '0.5');
+                glass.setAttribute('data-index', i);
+
+                const fill = document.createElement('div');
+                fill.className = 'water-fill';
+
+                // Check if this glass position has been filled
+                const glassWater = waterLog[i] ? waterLog[i].amount : 0;
+                fill.style.height = `${(glassWater / 0.5) * 100}%`;
+
+                glass.appendChild(fill);
+
+                // Add click event to toggle water glass
+                glass.addEventListener('click', () => {
+                    const index = parseInt(glass.getAttribute('data-index'));
+                    toggleWaterGlass(index);
+                });
+
+                waterTracker.appendChild(glass);
+            }
+
+            // Update water log list
+            updateWaterLog();
+        }
+        
+        // Toggle water glass
+        function toggleWaterGlass(index) {
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            if (waterLog[index]) {
+                // Remove this glass
+                waterLog.splice(index, 1);
+            } else {
+                // Add this glass
+                waterLog[index] = { id: Date.now(), amount: 0.5, time: timeString };
+            }
+            
+            initWaterTracker();
+            calculateTotals();
+        }
+        
+        // Add water button
+        document.getElementById('add-water').addEventListener('click', () => {
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            // Find first empty glass
+            let added = false;
+            const waterGoal = Math.max(8, Math.round(currentUser.weight / 10));
+            
+            for (let i = 0; i < waterGoal; i++) {
+                if (!waterLog[i]) {
+                    waterLog[i] = { id: Date.now(), amount: 0.5, time: timeString };
+                    added = true;
+                    break;
+                }
+            }
+            
+            // If all glasses are full, add to the end
+            if (!added) {
+                waterLog.push({ id: Date.now(), amount: 0.5, time: timeString });
+            }
+            
+            initWaterTracker();
+            calculateTotals();
+        });
+        
+        // Reset water button
+        document.getElementById('reset-water').addEventListener('click', () => {
+            if (confirm("Are you sure you want to reset your water intake for today?")) {
+                waterLog = [];
+                initWaterTracker();
+                calculateTotals();
+            }
+        });
+        
+        // Update water log list
+        function updateWaterLog() {
+            const waterLogContainer = document.getElementById('water-log');
+            waterLogContainer.innerHTML = '';
+
+            // Filter out any null/undefined entries that might exist
+            const validWaterLog = waterLog.filter(item => item != null);
+
+            if (validWaterLog.length === 0) {
+                waterLogContainer.innerHTML = '<div class="empty-state"><i class="fas fa-tint"></i><p>No water logged today. Drink up!</p></div>';
+                return;
+            }
+
+            validWaterLog.forEach((item, index) => {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `
+                    <div class="log-info">
+                        <div class="log-name">Glass of Water</div>
+                        <div class="log-details">
+                            <span>${item.time}</span>
+                            <span class="log-calories">+ 250ml</span>
+                        </div>
+                    </div>
+                    <div class="log-actions">
+                        <button class="icon-btn delete-btn" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                waterLogContainer.appendChild(logItem);
+            });
+
+            // Add event listeners to delete buttons
+            document.querySelectorAll('#water-log .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    // Remove the item with the specific ID
+                    waterLog = waterLog.filter(item => item && item.id !== id);
+                    initWaterTracker();
+                    calculateTotals();
+                });
+            });
+        }
+        
+        // Update food log display
+        function updateFoodLog() {
+            const foodLogContainer = document.getElementById('food-log');
+            const emptyFood = document.getElementById('empty-food');
+            
+            if (foodLog.length === 0) {
+                emptyFood.style.display = 'block';
+                foodLogContainer.innerHTML = '';
+                return;
+            }
+            
+            emptyFood.style.display = 'none';
+            foodLogContainer.innerHTML = '';
+            
+            foodLog.forEach(item => {
+                let aiBadge = '';
+                if (item.scanned) {
+                    aiBadge = '<span class="ai-scanned-badge"><i class="fas fa-robot"></i> AI</span>';
+                }
+                
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `
+                    <div class="log-info">
+                        <div class="log-name">
+                            ${item.name}
+                            ${aiBadge}
+                        </div>
+                        <div class="log-details">
+                            <span>${item.meal.charAt(0).toUpperCase() + item.meal.slice(1)} • ${item.time}</span>
+                            <span class="log-calories">+ ${item.calories} cal</span>
+                        </div>
+                    </div>
+                    <div class="log-actions">
+                        <button class="icon-btn delete-btn" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                foodLogContainer.appendChild(logItem);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('#food-log .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    foodLog = foodLog.filter(item => item.id !== id);
+                    updateFoodLog();
+                    calculateTotals();
+                });
+            });
+        }
+        
+        // Update exercise log display
+        function updateExerciseLog() {
+            const exerciseLogContainer = document.getElementById('exercise-log');
+            const emptyExercise = document.getElementById('empty-exercise');
+            
+            if (exerciseLog.length === 0) {
+                emptyExercise.style.display = 'block';
+                exerciseLogContainer.innerHTML = '';
+                return;
+            }
+            
+            emptyExercise.style.display = 'none';
+            exerciseLogContainer.innerHTML = '';
+            
+            exerciseLog.forEach(item => {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `
+                    <div class="log-info">
+                        <div class="log-name">${item.name}</div>
+                        <div class="log-details">
+                            <span>${item.duration} mins • ${item.time}</span>
+                            <span class="log-calories">- ${item.calories} cal</span>
+                        </div>
+                    </div>
+                    <div class="log-actions">
+                        <button class="icon-btn delete-btn" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                exerciseLogContainer.appendChild(logItem);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('#exercise-log .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    exerciseLog = exerciseLog.filter(item => item.id !== id);
+                    updateExerciseLog();
+                    calculateTotals();
+                });
+            });
+        }
+        
+        // Update recent activities
+        function updateRecentActivities() {
+            const recentActivities = document.getElementById('recent-activities');
+            recentActivities.innerHTML = '';
+            
+            // Combine and sort food and exercise logs by time (simulated)
+            const allActivities = [
+                ...foodLog.map(item => ({ ...item, type: 'food' })),
+                ...exerciseLog.map(item => ({ ...item, type: 'exercise' }))
+            ];
+            
+            // Sort by time (for demo, we'll use the order they were added)
+            allActivities.sort((a, b) => b.id - a.id);
+            
+            // Show only the 3 most recent activities
+            const recent = allActivities.slice(0, 3);
+            
+            if (recent.length === 0) {
+                recentActivities.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No recent activities</p></div>';
+                return;
+            }
+            
+            recent.forEach(item => {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                
+                let aiBadge = '';
+                if (item.scanned) {
+                    aiBadge = '<span class="ai-scanned-badge"><i class="fas fa-robot"></i> AI</span>';
+                }
+                
+                if (item.type === 'food') {
+                    logItem.innerHTML = `
+                        <div class="log-info">
+                            <div class="log-name">
+                                ${item.name}
+                                ${aiBadge}
+                            </div>
+                            <div class="log-details">
+                                <span>${item.meal.charAt(0).toUpperCase() + item.meal.slice(1)}</span>
+                                <span class="log-calories">+ ${item.calories} cal</span>
+                            </div>
+                        </div>
+                        <div class="log-actions">
+                            <button class="icon-btn edit-btn"><i class="fas fa-edit"></i></button>
+                        </div>
+                    `;
+                } else {
+                    logItem.innerHTML = `
+                        <div class="log-info">
+                            <div class="log-name">${item.name}</div>
+                            <div class="log-details">
+                                <span>${item.duration} mins</span>
+                                <span class="log-calories">- ${item.calories} cal</span>
+                            </div>
+                        </div>
+                        <div class="log-actions">
+                            <button class="icon-btn edit-btn"><i class="fas fa-edit"></i></button>
+                        </div>
+                    `;
+                }
+                
+                recentActivities.appendChild(logItem);
+            });
+        }
+        
+        // Food form submission (for manual entry)
+        document.getElementById('food-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('food-name').value;
+            const calories = parseInt(document.getElementById('food-calories').value);
+            const meal = document.getElementById('food-meal').value;
+            
+            if (!name || !calories || isNaN(calories)) {
+                alert('Please enter a food name and calories');
+                return;
+            }
+            
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            const newFood = {
+                id: Date.now(),
+                name,
+                calories,
+                meal,
+                time: timeString,
+                scanned: false
+            };
+            
+            foodLog.push(newFood);
+            
+            // Reset form
+            this.reset();
+            
+            // Update displays
+            updateFoodLog();
+            calculateTotals();
+            
+            // Show success message
+            alert(`${name} (${calories} cal) added to your food log!`);
+        });
+        
+        // Quick Add Food Buttons - Example/Demo only (non-interactive)
+        function initQuickFoodButtons() {
+            // Quick food buttons are now example/demo only - no functionality needed
+            // They are styled with pointer-events: none and opacity to show they're non-interactive
+            const quickFoodBtns = document.querySelectorAll('.quick-food-btn');
+            if (quickFoodBtns && quickFoodBtns.length > 0) {
+                console.log('Quick food buttons are display-only (example/demo)');
+            }
+        }
+        
+        // Helper function to add food to log
+        function addFoodToLog(food, mealType = null) {
+            // Ensure foodLog is initialized
+            if (!foodLog) {
+                foodLog = [];
+            }
+            
+            // Determine meal type based on current time if not provided
+            if (!mealType) {
+                const currentHour = new Date().getHours();
+                if (currentHour >= 5 && currentHour < 11) {
+                    mealType = 'breakfast';
+                } else if (currentHour >= 11 && currentHour < 15) {
+                    mealType = 'lunch';
+                } else if (currentHour >= 15 && currentHour < 20) {
+                    mealType = 'dinner';
+                } else {
+                    mealType = 'snack';
+                }
+            }
+            
+            // Get current time
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            // Create food entry
+            const newFood = {
+                id: Date.now(),
+                name: food.name,
+                calories: food.calories,
+                meal: mealType,
+                time: timeString,
+                scanned: false
+            };
+            
+            // Add to food log
+            foodLog.push(newFood);
+            
+            // Save data to localStorage immediately
+            saveUserData();
+            
+            // Force update displays immediately
+            updateFoodLog();
+            calculateTotals();
+            
+            // Scroll to food log section if on food tab
+            const foodTab = document.getElementById('food');
+            if (foodTab && foodTab.classList.contains('active')) {
+                const foodLogSection = document.getElementById('food-log');
+                if (foodLogSection) {
+                    setTimeout(() => {
+                        foodLogSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                }
+            }
+            
+            return newFood;
+        }
+        
+        // Exercise MET values (Metabolic Equivalent of Task) - calories per kg per hour
+        const exerciseMETs = {
+            running: 11.5,
+            jogging: 7.0,
+            walking: 3.5,
+            cycling: 8.0,
+            swimming: 8.3,
+            weightlifting: 5.0,
+            yoga: 2.5,
+            pilates: 3.0,
+            dancing: 6.0,
+            basketball: 8.0,
+            soccer: 7.0,
+            tennis: 7.3,
+            elliptical: 7.0,
+            rowing: 7.0,
+            hiking: 6.0,
+            custom: 5.0 // Default MET for custom exercises
+        };
+        
+        // Calculate calories burned using MET formula: MET × weight (kg) × duration (hours)
+        function calculateCaloriesBurned(exerciseType, duration, weight) {
+            const met = exerciseMETs[exerciseType] || exerciseMETs.custom;
+            const durationHours = duration / 60; // Convert minutes to hours
+            const calories = met * weight * durationHours;
+            return Math.round(calories);
+        }
+        
+        // Update calories when exercise type or duration changes
+        document.getElementById('exercise-type')?.addEventListener('change', updateExerciseCalories);
+        document.getElementById('exercise-duration')?.addEventListener('input', updateExerciseCalories);
+        
+        function updateExerciseCalories() {
+            const exerciseType = document.getElementById('exercise-type').value;
+            const duration = parseInt(document.getElementById('exercise-duration').value) || 0;
+            const caloriesInput = document.getElementById('exercise-calories');
+            
+            if (exerciseType && duration > 0 && currentUser) {
+                const calories = calculateCaloriesBurned(exerciseType, duration, currentUser.weight);
+                caloriesInput.value = calories;
+            } else {
+                caloriesInput.value = '';
+            }
+        }
+        
+        // Exercise form submission
+        document.getElementById('exercise-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const exerciseType = document.getElementById('exercise-type').value;
+            const customName = document.getElementById('exercise-name').value;
+            const duration = parseInt(document.getElementById('exercise-duration').value);
+            const caloriesInput = document.getElementById('exercise-calories');
+            
+            if (!exerciseType) {
+                alert('Please select an exercise type');
+                return;
+            }
+            
+            // Calculate calories if not already calculated
+            let calories = parseInt(caloriesInput.value);
+            if (!calories || isNaN(calories)) {
+                calories = calculateCaloriesBurned(exerciseType, duration, currentUser.weight);
+            }
+            
+            // Get exercise name
+            const exerciseNames = {
+                running: 'Running',
+                jogging: 'Jogging',
+                walking: 'Walking',
+                cycling: 'Cycling',
+                swimming: 'Swimming',
+                weightlifting: 'Weight Lifting',
+                yoga: 'Yoga',
+                pilates: 'Pilates',
+                dancing: 'Dancing',
+                basketball: 'Basketball',
+                soccer: 'Soccer',
+                tennis: 'Tennis',
+                elliptical: 'Elliptical',
+                rowing: 'Rowing',
+                hiking: 'Hiking'
+            };
+            
+            const name = exerciseType === 'custom' ? (customName || 'Custom Exercise') : exerciseNames[exerciseType];
+            
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            const newExercise = {
+                id: Date.now(),
+                name,
+                type: exerciseType,
+                duration,
+                calories,
+                time: timeString
+            };
+            
+            exerciseLog.push(newExercise);
+            
+            // Reset form
+            this.reset();
+            caloriesInput.value = '';
+            
+            // Update displays
+            updateExerciseLog();
+            calculateTotals();
+            
+            // Show success message
+            alert(`${name} added! Burned ${calories} calories in ${duration} minutes.`);
+        });
+        
+        // Profile edit buttons
+        document.getElementById('editPersonalBtn').addEventListener('click', () => {
+            alert('Personal information editing would be implemented here with a form overlay.');
+        });
+        
+        document.getElementById('editFitnessBtn').addEventListener('click', () => {
+            alert('Fitness profile editing would be implemented here with a form overlay.');
+        });
+        
+        document.getElementById('changePasswordBtn').addEventListener('click', () => {
+            const newPassword = prompt('Enter your new password:');
+            if (newPassword && newPassword.length >= 6) {
+                currentUser.password = newPassword;
+                // Update in users array
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                    localStorage.setItem('fitTrackUsers', JSON.stringify(users));
+                }
+                alert('Password changed successfully!');
+            } else if (newPassword) {
+                alert('Password must be at least 6 characters long.');
+            }
+        });
+        
+        document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                // Remove user from users array
+                users = users.filter(u => u.id !== currentUser.id);
+                localStorage.setItem('fitTrackUsers', JSON.stringify(users));
+                
+                // Remove user data
+                localStorage.removeItem(`fitTrackData_${currentUser.id}`);
+                
+                // Log out
+                currentUser = null;
+                showLoginScreen();
+                alert('Account deleted successfully.');
+            }
+        });
+        
+        // Enhanced Food Database with accurate calorie values per 100g
+        const foodDatabase = [
+            // Proteins
+            { name: "Grilled Chicken Breast", calories: 165, protein: 31, carbs: 0, fat: 3.6, serving: "100g", icon: "fa-drumstick-bite" },
+            { name: "Salmon", calories: 208, protein: 20, carbs: 0, fat: 12, serving: "100g", icon: "fa-fish" },
+            { name: "Lean Beef", calories: 250, protein: 26, carbs: 0, fat: 17, serving: "100g", icon: "fa-drumstick-bite" },
+            { name: "Turkey Breast", calories: 135, protein: 30, carbs: 0, fat: 1, serving: "100g", icon: "fa-drumstick-bite" },
+            { name: "Eggs (2 whole)", calories: 143, protein: 13, carbs: 1, fat: 10, serving: "2 eggs", icon: "fa-egg" },
+            { name: "Tofu", calories: 76, protein: 8, carbs: 2, fat: 4.8, serving: "100g", icon: "fa-cube" },
+            
+            // Carbs
+            { name: "Brown Rice (cooked)", calories: 112, protein: 2.6, carbs: 23, fat: 0.9, serving: "100g", icon: "fa-seedling" },
+            { name: "White Rice (cooked)", calories: 130, protein: 2.7, carbs: 28, fat: 0.3, serving: "100g", icon: "fa-seedling" },
+            { name: "Quinoa (cooked)", calories: 120, protein: 4.4, carbs: 22, fat: 1.9, serving: "100g", icon: "fa-seedling" },
+            { name: "Sweet Potato", calories: 86, protein: 1.6, carbs: 20, fat: 0.1, serving: "100g", icon: "fa-seedling" },
+            { name: "Whole Wheat Bread", calories: 247, protein: 13, carbs: 41, fat: 4.2, serving: "100g", icon: "fa-bread-slice" },
+            { name: "Oatmeal", calories: 68, protein: 2.4, carbs: 12, fat: 1.4, serving: "100g cooked", icon: "fa-seedling" },
+            
+            // Vegetables
+            { name: "Broccoli", calories: 34, protein: 2.8, carbs: 7, fat: 0.4, serving: "100g", icon: "fa-leaf" },
+            { name: "Spinach", calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4, serving: "100g", icon: "fa-leaf" },
+            { name: "Salad Bowl", calories: 120, protein: 5, carbs: 15, fat: 6, serving: "1 bowl", icon: "fa-leaf" },
+            { name: "Carrots", calories: 41, protein: 0.9, carbs: 10, fat: 0.2, serving: "100g", icon: "fa-carrot" },
+            
+            // Fruits
+            { name: "Guava", calories: 68, protein: 2.6, carbs: 14, fat: 1, serving: "100g", icon: "fa-apple-alt" },
+            { name: "Apple", calories: 52, protein: 0.3, carbs: 14, fat: 0.2, serving: "100g", icon: "fa-apple-alt" },
+            { name: "Banana", calories: 89, protein: 1.1, carbs: 23, fat: 0.3, serving: "100g", icon: "fa-banana" },
+            { name: "Blueberries", calories: 57, protein: 0.7, carbs: 14, fat: 0.3, serving: "100g", icon: "fa-apple-alt" },
+            { name: "Orange", calories: 47, protein: 0.9, carbs: 12, fat: 0.1, serving: "100g", icon: "fa-apple-alt" },
+            
+            // Fats
+            { name: "Avocado", calories: 160, protein: 2, carbs: 9, fat: 15, serving: "100g", icon: "fa-leaf" },
+            { name: "Almonds", calories: 579, protein: 21, carbs: 22, fat: 50, serving: "100g", icon: "fa-seedling" },
+            { name: "Peanut Butter", calories: 588, protein: 25, carbs: 20, fat: 50, serving: "100g", icon: "fa-mortar-pestle" },
+            { name: "Olive Oil", calories: 884, protein: 0, carbs: 0, fat: 100, serving: "100g", icon: "fa-tint" },
+            
+            // Dairy
+            { name: "Greek Yogurt", calories: 100, protein: 18, carbs: 6, fat: 0.4, serving: "100g", icon: "fa-mortar-pestle" },
+            { name: "Cottage Cheese", calories: 98, protein: 11, carbs: 3.4, fat: 4.3, serving: "100g", icon: "fa-mortar-pestle" },
+            { name: "Milk (2%)", calories: 50, protein: 3.3, carbs: 5, fat: 2, serving: "100ml", icon: "fa-mortar-pestle" },
+            
+            // Other
+            { name: "Protein Shake", calories: 180, protein: 30, carbs: 10, fat: 2, serving: "1 serving", icon: "fa-blender" },
+            { name: "Energy Bar", calories: 250, protein: 10, carbs: 30, fat: 8, serving: "1 bar", icon: "fa-cookie" }
+        ];
+        
+        let scannedFoodData = null;
+        let cameraStream = null;
+        
+        // Initialize Nutri Scan AI
+        function initNutriScanAI() {
+            // Populate food suggestions
+            populateFoodSuggestions();
+            
+            // Event listeners for scan options
+            document.getElementById('takePhotoBtn').addEventListener('click', openCamera);
+            document.getElementById('uploadPhotoBtn').addEventListener('click', openFilePicker);
+            document.getElementById('scanPreview').addEventListener('click', openFilePicker);
+            document.getElementById('closeCamera').addEventListener('click', closeCamera);
+            document.getElementById('capturePhoto').addEventListener('click', capturePhoto);
+            document.getElementById('addScannedFood').addEventListener('click', addScannedFoodToLog);
+            document.getElementById('rescanFood').addEventListener('click', resetScan);
+            
+            // Setup file upload
+            setupFileUpload();
+        }
+        
+        // Populate food suggestions
+        function populateFoodSuggestions() {
+            const container = document.getElementById('foodSuggestions');
+            container.innerHTML = '';
+            
+            // Priority foods to show first
+            const priorityFoods = ['Grilled Chicken Breast', 'Salad Bowl', 'Eggs (2 whole)', 'Guava'];
+            
+            // Create a sorted array: priority foods first, then the rest
+            const sortedFoods = [];
+            const priorityIndices = [];
+            
+            // Find priority foods and their indices
+            foodDatabase.forEach((food, index) => {
+                if (priorityFoods.includes(food.name)) {
+                    priorityIndices.push({ food, index });
+                }
+            });
+            
+            // Add priority foods first
+            priorityIndices.forEach(({ food, index }) => {
+                sortedFoods.push({ food, index });
+            });
+            
+            // Add remaining foods
+            foodDatabase.forEach((food, index) => {
+                if (!priorityFoods.includes(food.name)) {
+                    sortedFoods.push({ food, index });
+                }
+            });
+            
+            // Create suggestion elements
+            sortedFoods.forEach(({ food, index }) => {
+                const suggestion = document.createElement('div');
+                suggestion.className = 'food-suggestion';
+                suggestion.setAttribute('data-index', index);
+                suggestion.innerHTML = `
+                    <i class="fas ${food.icon} suggestion-icon"></i>
+                    <div class="suggestion-name">${food.name}</div>
+                    <div class="suggestion-calories">${food.calories} cal</div>
+                `;
+                
+                suggestion.addEventListener('click', () => {
+                    // Automatically add food to log
+                    addFoodToLog(food);
+                    
+                    // Visual feedback
+                    suggestion.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        suggestion.style.transform = '';
+                    }, 200);
+                });
+                
+                container.appendChild(suggestion);
+            });
+        }
+        
+        // Open camera
+        async function openCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+                document.getElementById('cameraModal').classList.add('active');
+            } catch (err) {
+                console.error("Camera error:", err);
+                alert("Unable to access camera. Please check permissions.");
+            }
+        }
+        
+        // Close camera
+        function closeCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            document.getElementById('cameraModal').classList.remove('active');
+        }
+        
+        // Capture photo
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            closeCamera();
+            
+            // Show captured image
+            const preview = document.getElementById('scanPreview');
+            preview.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/jpeg');
+            preview.appendChild(img);
+            
+            // Simulate AI analysis
+            simulateFoodScan();
+        }
+        
+        // Open file picker
+        function openFilePicker() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const preview = document.getElementById('scanPreview');
+                        preview.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        preview.appendChild(img);
+                        
+                        simulateFoodScan();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        
+        // Setup file upload via drag & drop
+        function setupFileUpload() {
+            const preview = document.getElementById('scanPreview');
+            
+            preview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                preview.style.borderColor = 'var(--primary)';
+                preview.style.background = '#f0f7ff';
+            });
+            
+            preview.addEventListener('dragleave', () => {
+                preview.style.borderColor = '#ddd';
+                preview.style.background = '#f8f9fa';
+            });
+            
+            preview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                preview.style.borderColor = '#ddd';
+                preview.style.background = '#f8f9fa';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            preview.innerHTML = '';
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            preview.appendChild(img);
+                            
+                            simulateFoodScan();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        }
+        
+        // Simulate food scan
+        function simulateFoodScan() {
+            const loading = document.getElementById('scanLoading');
+            const results = document.getElementById('scanResults');
+            
+            loading.classList.add('active');
+            
+            setTimeout(() => {
+                const randomFood = foodDatabase[Math.floor(Math.random() * foodDatabase.length)];
+                updateScanResults(randomFood);
+                
+                loading.classList.remove('active');
+                results.classList.add('active');
+                results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 1500);
+        }
+        
+        // Simulate food recognition for suggestions
+        function simulateFoodRecognition(food) {
+            const preview = document.getElementById('scanPreview');
+            const loading = document.getElementById('scanLoading');
+            const results = document.getElementById('scanResults');
+            
+            preview.innerHTML = `
+                <div style="font-size: 3rem; color: var(--primary);">
+                    <i class="fas ${food.icon}"></i>
+                </div>
+                <p>${food.name}</p>
+            `;
+            
+            loading.classList.add('active');
+            
+            setTimeout(() => {
+                updateScanResults(food);
+                loading.classList.remove('active');
+                results.classList.add('active');
+                results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 800);
+        }
+        
+        // Update scan results
+        function updateScanResults(food) {
+            scannedFoodData = food;
+            
+            document.getElementById('scannedFoodName').textContent = food.name;
+            document.getElementById('scanConfidence').textContent = `${Math.floor(Math.random() * 15) + 85}% confidence`;
+            document.getElementById('scanCalories').textContent = food.calories;
+            document.getElementById('scanProtein').textContent = `${food.protein}g`;
+            document.getElementById('scanCarbs').textContent = `${food.carbs}g`;
+            document.getElementById('scanFat').textContent = `${food.fat}g`;
+        }
+        
+        // Add scanned food to log
+        function addScannedFoodToLog() {
+            if (!scannedFoodData) return;
+            
+            const currentTime = new Date();
+            const timeString = currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            const newFood = {
+                id: Date.now(),
+                name: scannedFoodData.name,
+                calories: scannedFoodData.calories,
+                meal: 'lunch',
+                time: timeString,
+                scanned: true
+            };
+            
+            foodLog.push(newFood);
+            
+            updateFoodLog();
+            calculateTotals();
+            
+            resetScan();
+            
+            alert(`${newFood.name} added to your food log via Nutri Scan AI!`);
+        }
+        
+        // Reset scan
+        function resetScan() {
+            document.getElementById('scanResults').classList.remove('active');
+            document.getElementById('scanPreview').innerHTML = `
+                <i class="fas fa-camera"></i>
+                <p>Tap to scan your food</p>
+                <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">or select an option above</p>
+            `;
+            scannedFoodData = null;
+        }
+        
+        // Initialize the app
+        function initApp() {
+            updateFoodLog();
+            updateExerciseLog();
+            initWaterTracker();
+            calculateTotals();
+            initNutriScanAI(); // Initialize Nutri Scan AI
+            initQuickFoodButtons(); // Initialize quick food buttons
+        }
+        
+        // Check if user is already logged in
+        function checkLoggedIn() {
+            const loggedInUserId = localStorage.getItem('fitTrackLoggedIn');
+            if (loggedInUserId) {
+                const user = users.find(u => u.id === parseInt(loggedInUserId));
+                if (user) {
+                    currentUser = user;
+                    loadUserData();
+                    showMainApp();
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', checkLoggedIn);
+    </script>
+</body>
+</html>
