@@ -2003,6 +2003,11 @@
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', () => {
             if (confirm('Are you sure you want to log out?')) {
+                // Save all data before logging out (extra safety)
+                if (currentUser) {
+                    saveUserData();
+                }
+                // Clear current user but keep data in localStorage
                 currentUser = null;
                 showLoginScreen();
             }
@@ -2014,11 +2019,16 @@
             document.getElementById('registerScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             
+            // Load user data first (preserves existing data)
+            if (currentUser) {
+                loadUserData();
+            }
+            
             // Update profile header
             updateProfileHeader();
             // Update profile tab
             updateProfileTab();
-            // Initialize app
+            // Initialize app (this will refresh displays with loaded data)
             initApp();
         }
         
@@ -2040,25 +2050,32 @@
             if (savedData) {
                 try {
                     const userData = JSON.parse(savedData);
-                    foodLog = userData.foodLog || [];
-                    exerciseLog = userData.exerciseLog || [];
-                    waterLog = userData.waterLog || [];
+                    // Only load if data exists and is valid
+                    if (userData.foodLog && Array.isArray(userData.foodLog)) {
+                        foodLog = userData.foodLog;
+                    }
+                    if (userData.exerciseLog && Array.isArray(userData.exerciseLog)) {
+                        exerciseLog = userData.exerciseLog;
+                    }
+                    if (userData.waterLog && Array.isArray(userData.waterLog)) {
+                        waterLog = userData.waterLog;
+                    }
                 } catch (e) {
                     console.error('Error loading user data:', e);
-                    // Reset if there's an error
-                    foodLog = [];
-                    exerciseLog = [];
-                    waterLog = [];
+                    // If error, try to preserve existing data, only reset if absolutely necessary
+                    if (!foodLog || foodLog.length === 0) foodLog = [];
+                    if (!exerciseLog || exerciseLog.length === 0) exerciseLog = [];
+                    if (!waterLog || waterLog.length === 0) waterLog = [];
                 }
             } else {
-                // No saved data, start fresh
-                foodLog = [];
-                exerciseLog = [];
-                waterLog = [];
+                // No saved data, initialize empty arrays but don't overwrite existing in-memory data
+                if (!foodLog) foodLog = [];
+                if (!exerciseLog) exerciseLog = [];
+                if (!waterLog) waterLog = [];
             }
             
-            // Save the data (in case it was loaded or reset)
-            saveUserData();
+            // Only save if we loaded new data (preserve what's already saved)
+            // Don't overwrite with empty arrays unnecessarily
         }
         
         // Initialize user data (for new users)
@@ -2344,6 +2361,7 @@
             
             initWaterTracker();
             calculateTotals();
+            saveUserData(); // Save after adding water
         });
         
         // Reset water button
@@ -2352,6 +2370,7 @@
                 waterLog = [];
                 initWaterTracker();
                 calculateTotals();
+                saveUserData(); // Save after reset
             }
         });
         
@@ -2397,6 +2416,7 @@
                     waterLog = waterLog.filter(item => item && item.id !== id);
                     initWaterTracker();
                     calculateTotals();
+                    saveUserData(); // Save after deletion
                 });
             });
         }
@@ -2451,6 +2471,7 @@
                     foodLog = foodLog.filter(item => item.id !== id);
                     updateFoodLog();
                     calculateTotals();
+                    saveUserData(); // Save after deletion
                 });
             });
         }
@@ -2497,6 +2518,7 @@
                     exerciseLog = exerciseLog.filter(item => item.id !== id);
                     updateExerciseLog();
                     calculateTotals();
+                    saveUserData(); // Save after deletion
                 });
             });
         }
@@ -2600,6 +2622,7 @@
             // Update displays
             updateFoodLog();
             calculateTotals();
+            saveUserData(); // Save after adding food
             
             // Show success message
             alert(`${name} (${calories} cal) added to your food log!`);
@@ -2781,6 +2804,7 @@
             // Update displays
             updateExerciseLog();
             calculateTotals();
+            saveUserData(); // Save after adding exercise
             
             // Show success message
             alert(`${name} added! Burned ${calories} calories in ${duration} minutes.`);

@@ -487,11 +487,741 @@ app.post("/api/food/log", (req, res) => {
   });
 });
 
-// Keep all your existing endpoints...
+// ==================== FOOD DATABASE ENDPOINTS ====================
+
+// GET ALL FOODS FROM DATABASE
+app.get("/api/foods", (req, res) => {
+  const sql = "SELECT * FROM food_database ORDER BY name ASC";
+  
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// SEARCH FOODS
+app.get("/api/foods/search", (req, res) => {
+  const { query } = req.query;
+  
+  if (!query) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Search query is required" 
+    });
+  }
+  
+  const sql = `
+    SELECT * FROM food_database 
+    WHERE name LIKE ? OR keywords LIKE ?
+    ORDER BY name ASC
+  `;
+  
+  const searchTerm = `%${query}%`;
+  
+  db.query(sql, [searchTerm, searchTerm], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// GET FOOD BY ID
+app.get("/api/foods/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM food_database WHERE id = ?";
+  
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Food not found" 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results[0]
+    });
+  });
+});
+
+// ==================== EXERCISE DATABASE ENDPOINTS ====================
+
+// GET ALL EXERCISES FROM DATABASE
+app.get("/api/exercises", (req, res) => {
+  const sql = "SELECT * FROM exercise_database ORDER BY name ASC";
+  
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// GET EXERCISE BY TYPE
+app.get("/api/exercises/type/:type", (req, res) => {
+  const { type } = req.params;
+  const sql = "SELECT * FROM exercise_database WHERE type = ?";
+  
+  db.query(sql, [type], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// GET MET VALUE FOR EXERCISE
+app.get("/api/exercises/met/:type", (req, res) => {
+  const { type } = req.params;
+  const sql = "SELECT met_value FROM exercise_database WHERE type = ? LIMIT 1";
+  
+  db.query(sql, [type], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Exercise type not found" 
+      });
+    }
+    
+    res.json({
+      success: true,
+      met_value: results[0].met_value
+    });
+  });
+});
+
+// ==================== USER LOGIN WITH DAY STREAK ====================
+
+// USER LOGIN (with automatic day streak increment)
+app.post("/api/auth/login", (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Email and password are required" 
+    });
+  }
+  
+  const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+  
+  db.query(sql, [email, password], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    if (results.length === 0) {
+      return res.status(401).json({ 
+        success: false, 
+        error: "Invalid email or password" 
+      });
+    }
+    
+    const user = results[0];
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    
+    // Check if user logged in today
+    const checkLoginSql = "SELECT * FROM login_history WHERE user_id = ? AND login_date = ?";
+    
+    db.query(checkLoginSql, [user.id, today], (err, loginResults) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ 
+          success: false, 
+          error: err.message 
+        });
+      }
+      
+      let newStreak = user.day_streak;
+      let shouldIncrementStreak = false;
+      
+      // If user hasn't logged in today
+      if (loginResults.length === 0) {
+        // Insert login record
+        const insertLoginSql = "INSERT INTO login_history (user_id, login_date) VALUES (?, ?)";
+        db.query(insertLoginSql, [user.id, today], (err) => {
+          if (err) {
+            console.error("Error inserting login history:", err);
+          }
+        });
+        
+        // Check if last login was yesterday (consecutive day)
+        if (user.last_login_date === yesterday) {
+          // Increment streak
+          newStreak = user.day_streak + 1;
+          shouldIncrementStreak = true;
+        } else if (!user.last_login_date || user.last_login_date !== today) {
+          // Reset streak if last login was not yesterday or today
+          newStreak = 1;
+          shouldIncrementStreak = true;
+        }
+        
+        // Update user's last login date and streak
+        if (shouldIncrementStreak) {
+          const updateUserSql = "UPDATE users SET last_login_date = ?, day_streak = ? WHERE id = ?";
+          db.query(updateUserSql, [today, newStreak, user.id], (err) => {
+            if (err) {
+              console.error("Error updating user streak:", err);
+            }
+          });
+        } else {
+          // Just update last login date
+          const updateDateSql = "UPDATE users SET last_login_date = ? WHERE id = ?";
+          db.query(updateDateSql, [today, user.id], (err) => {
+            if (err) {
+              console.error("Error updating last login date:", err);
+            }
+          });
+        }
+      }
+      
+      // Return user data with updated streak
+      res.json({
+        success: true,
+        data: {
+          ...user,
+          day_streak: newStreak,
+          last_login_date: today
+        },
+        message: shouldIncrementStreak ? `Day streak: ${newStreak} days!` : "Welcome back!"
+      });
+    });
+  });
+});
+
+// ==================== EXERCISE LOGGING ====================
+
+// LOG EXERCISE
+app.post("/api/exercise/log", (req, res) => {
+  const {
+    user_id,
+    exercise_name,
+    exercise_type,
+    duration,
+    calories,
+    log_date,
+    log_time
+  } = req.body;
+  
+  if (!user_id || !exercise_name || !duration || calories === undefined) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Missing required fields: user_id, exercise_name, duration, and calories are required" 
+    });
+  }
+  
+  const sql = `
+    INSERT INTO exercise_logs 
+    (user_id, exercise_name, exercise_type, duration, calories, log_date, log_time)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  
+  const values = [
+    user_id,
+    exercise_name,
+    exercise_type || null,
+    duration,
+    calories,
+    log_date || new Date().toISOString().split('T')[0],
+    log_time || new Date().toTimeString().split(' ')[0]
+  ];
+  
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    // Update daily summary
+    updateDailySummary(user_id, log_date || new Date().toISOString().split('T')[0]);
+    
+    res.json({
+      success: true,
+      data: {
+        id: result.insertId,
+        message: "Exercise logged successfully",
+        timestamp: new Date().toISOString()
+      }
+    });
+  });
+});
+
+// GET USER EXERCISE LOGS
+app.get("/api/exercise/logs/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const { date } = req.query;
+  
+  let sql = "SELECT * FROM exercise_logs WHERE user_id = ?";
+  const params = [user_id];
+  
+  if (date) {
+    sql += " AND log_date = ?";
+    params.push(date);
+  }
+  
+  sql += " ORDER BY log_date DESC, log_time DESC";
+  
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// ==================== WATER LOGGING ====================
+
+// LOG WATER INTAKE
+app.post("/api/water/log", (req, res) => {
+  const {
+    user_id,
+    amount,
+    log_date,
+    log_time
+  } = req.body;
+  
+  if (!user_id || !amount) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Missing required fields: user_id and amount are required" 
+    });
+  }
+  
+  const sql = `
+    INSERT INTO water_logs 
+    (user_id, amount, log_date, log_time)
+    VALUES (?, ?, ?, ?)
+  `;
+  
+  const values = [
+    user_id,
+    amount,
+    log_date || new Date().toISOString().split('T')[0],
+    log_time || new Date().toTimeString().split(' ')[0]
+  ];
+  
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    // Update daily summary
+    updateDailySummary(user_id, log_date || new Date().toISOString().split('T')[0]);
+    
+    res.json({
+      success: true,
+      data: {
+        id: result.insertId,
+        message: "Water intake logged successfully",
+        timestamp: new Date().toISOString()
+      }
+    });
+  });
+});
+
+// GET USER WATER LOGS
+app.get("/api/water/logs/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const { date } = req.query;
+  
+  let sql = "SELECT * FROM water_logs WHERE user_id = ?";
+  const params = [user_id];
+  
+  if (date) {
+    sql += " AND log_date = ?";
+    params.push(date);
+  }
+  
+  sql += " ORDER BY log_date DESC, log_time DESC";
+  
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// ==================== CALORIE TRACKING & DAILY SUMMARY ====================
+
+// GET USER FOOD LOGS
+app.get("/api/food/logs/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const { date } = req.query;
+  
+  let sql = "SELECT * FROM food_logs WHERE user_id = ?";
+  const params = [user_id];
+  
+  if (date) {
+    sql += " AND log_date = ?";
+    params.push(date);
+  }
+  
+  sql += " ORDER BY log_date DESC, log_time DESC";
+  
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: results,
+      count: results.length
+    });
+  });
+});
+
+// GET DAILY SUMMARY (Calories, macros, water)
+app.get("/api/summary/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const { date } = req.query;
+  const targetDate = date || new Date().toISOString().split('T')[0];
+  
+  // Get or create daily summary
+  const getSummarySql = "SELECT * FROM daily_summary WHERE user_id = ? AND summary_date = ?";
+  
+  db.query(getSummarySql, [user_id, targetDate], (err, summaryResults) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message 
+      });
+    }
+    
+    // If summary doesn't exist, calculate and create it
+    if (summaryResults.length === 0) {
+      updateDailySummary(user_id, targetDate, (summary) => {
+        res.json({
+          success: true,
+          data: summary
+        });
+      });
+    } else {
+      res.json({
+        success: true,
+        data: summaryResults[0]
+      });
+    }
+  });
+});
+
+// Helper function to update daily summary
+function updateDailySummary(user_id, date, callback) {
+  // Calculate totals from food logs
+  const foodSql = `
+    SELECT 
+      SUM(calories) as total_calories,
+      SUM(protein) as total_protein,
+      SUM(carbs) as total_carbs,
+      SUM(fat) as total_fat
+    FROM food_logs
+    WHERE user_id = ? AND log_date = ?
+  `;
+  
+  // Calculate totals from exercise logs
+  const exerciseSql = `
+    SELECT SUM(calories) as total_calories_burned
+    FROM exercise_logs
+    WHERE user_id = ? AND log_date = ?
+  `;
+  
+  // Calculate water intake
+  const waterSql = `
+    SELECT SUM(amount) as total_water
+    FROM water_logs
+    WHERE user_id = ? AND log_date = ?
+  `;
+  
+  db.query(foodSql, [user_id, date], (err, foodResults) => {
+    if (err) {
+      console.error("Error calculating food totals:", err);
+      return callback ? callback(null) : null;
+    }
+    
+    db.query(exerciseSql, [user_id, date], (err, exerciseResults) => {
+      if (err) {
+        console.error("Error calculating exercise totals:", err);
+        return callback ? callback(null) : null;
+      }
+      
+      db.query(waterSql, [user_id, date], (err, waterResults) => {
+        if (err) {
+          console.error("Error calculating water totals:", err);
+          return callback ? callback(null) : null;
+        }
+        
+        const totalCalories = foodResults[0].total_calories || 0;
+        const totalBurned = exerciseResults[0].total_calories_burned || 0;
+        const netCalories = totalCalories - totalBurned;
+        const totalProtein = foodResults[0].total_protein || 0;
+        const totalCarbs = foodResults[0].total_carbs || 0;
+        const totalFat = foodResults[0].total_fat || 0;
+        const totalWater = waterResults[0].total_water || 0;
+        
+        // Insert or update daily summary
+        const upsertSql = `
+          INSERT INTO daily_summary 
+          (user_id, summary_date, total_calories_consumed, total_calories_burned, 
+           net_calories, total_protein, total_carbs, total_fat, water_intake)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            total_calories_consumed = VALUES(total_calories_consumed),
+            total_calories_burned = VALUES(total_calories_burned),
+            net_calories = VALUES(net_calories),
+            total_protein = VALUES(total_protein),
+            total_carbs = VALUES(total_carbs),
+            total_fat = VALUES(total_fat),
+            water_intake = VALUES(water_intake),
+            updated_at = CURRENT_TIMESTAMP
+        `;
+        
+        db.query(upsertSql, [
+          user_id, date, totalCalories, totalBurned, netCalories,
+          totalProtein, totalCarbs, totalFat, totalWater
+        ], (err, result) => {
+          if (err) {
+            console.error("Error updating daily summary:", err);
+            return callback ? callback(null) : null;
+          }
+          
+          const summary = {
+            user_id,
+            summary_date: date,
+            total_calories_consumed: totalCalories,
+            total_calories_burned: totalBurned,
+            net_calories: netCalories,
+            total_protein: totalProtein,
+            total_carbs: totalCarbs,
+            total_fat: totalFat,
+            water_intake: totalWater
+          };
+          
+          if (callback) {
+            callback(summary);
+          }
+        });
+      });
+    });
+  });
+}
+
+// DELETE FOOD LOG
+app.delete("/api/food/logs/:id", (req, res) => {
+  const { id } = req.params;
+  
+  // Get log to find user_id and date for summary update
+  const getLogSql = "SELECT user_id, log_date FROM food_logs WHERE id = ?";
+  
+  db.query(getLogSql, [id], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Food log not found" 
+      });
+    }
+    
+    const { user_id, log_date } = results[0];
+    
+    const deleteSql = "DELETE FROM food_logs WHERE id = ?";
+    
+    db.query(deleteSql, [id], (err) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ 
+          success: false, 
+          error: err.message 
+        });
+      }
+      
+      // Update daily summary
+      updateDailySummary(user_id, log_date);
+      
+      res.json({
+        success: true,
+        message: "Food log deleted successfully"
+      });
+    });
+  });
+});
+
+// DELETE EXERCISE LOG
+app.delete("/api/exercise/logs/:id", (req, res) => {
+  const { id } = req.params;
+  
+  const getLogSql = "SELECT user_id, log_date FROM exercise_logs WHERE id = ?";
+  
+  db.query(getLogSql, [id], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Exercise log not found" 
+      });
+    }
+    
+    const { user_id, log_date } = results[0];
+    
+    const deleteSql = "DELETE FROM exercise_logs WHERE id = ?";
+    
+    db.query(deleteSql, [id], (err) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ 
+          success: false, 
+          error: err.message 
+        });
+      }
+      
+      updateDailySummary(user_id, log_date);
+      
+      res.json({
+        success: true,
+        message: "Exercise log deleted successfully"
+      });
+    });
+  });
+});
+
+// DELETE WATER LOG
+app.delete("/api/water/logs/:id", (req, res) => {
+  const { id } = req.params;
+  
+  const getLogSql = "SELECT user_id, log_date FROM water_logs WHERE id = ?";
+  
+  db.query(getLogSql, [id], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Water log not found" 
+      });
+    }
+    
+    const { user_id, log_date } = results[0];
+    
+    const deleteSql = "DELETE FROM water_logs WHERE id = ?";
+    
+    db.query(deleteSql, [id], (err) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ 
+          success: false, 
+          error: err.message 
+        });
+      }
+      
+      updateDailySummary(user_id, log_date);
+      
+      res.json({
+        success: true,
+        message: "Water log deleted successfully"
+      });
+    });
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Uploads directory: ${path.join(__dirname, 'uploads')}`);
   console.log(`API Base URL: http://localhost:${PORT}`);
+  console.log(`\n=== Available Endpoints ===`);
+  console.log(`Food Database: GET /api/foods, GET /api/foods/search?query=...`);
+  console.log(`Exercise Database: GET /api/exercises, GET /api/exercises/type/:type`);
+  console.log(`User Login: POST /api/auth/login (auto day streak increment)`);
+  console.log(`Food Logs: POST /api/food/log, GET /api/food/logs/:user_id`);
+  console.log(`Exercise Logs: POST /api/exercise/log, GET /api/exercise/logs/:user_id`);
+  console.log(`Water Logs: POST /api/water/log, GET /api/water/logs/:user_id`);
+  console.log(`Daily Summary: GET /api/summary/:user_id?date=YYYY-MM-DD`);
 });
